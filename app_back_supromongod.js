@@ -5,54 +5,130 @@
 module.exports = supromongod
 
 function supromongod(api, cfg){
-var n, app = api.app, name = '/example'
+var n, fs, mongod
+   ,app = api.app, name = 'supromongod'
 
-    return
+    fs = require('fs')
+
+    check_launch_daemon(
+        api_db_setup
+    )
+
+    /* == admin/status UI && API: == */
+
     // order of priority; serve static files, css, l10n
-    app.use(name, api.connect['static'](__dirname + '/'))
-    // http://$WEB_ADDRESS/l10n/ru_example.js
-    /* path  to: '$ROOT/app_modules/example/l10n/ru_example.js' */
-    app.use('/l10n/', api.mwL10n(api, __dirname, '_' + name.slice(1) + '.js'))
+    app.use('/' + name, api.connect['static'](__dirname + '/'))
+    app.use('/l10n/', api.mwL10n(api, __dirname, '_' + name + '.js'))
+    app.use('/css/' + name, api.connect['static'](__dirname + '/css/'))
+    n = '/css/' + name + '/css'
+    app.use(n, api.connect.sendFile(__dirname + name + '.css', true))
 
-    // files: http://$WEB_ADDRESS/css/example/*
-    app.use('/css' + name, api.connect['static'](__dirname + '/css/'))
-    // style: http://$WEB_ADDRESS/css/example/css
-    n = '/css' + name + '/css'
-    app.use(n, api.connect.sendFile(__dirname + name + '.css', true/* full path*/))
-    // this module stuff:
-    return { css:[ n ], js:[ name + '/app_front_example'], cfg: cfg }
-}
+    // TODO API to control and getting update of logfile
 
-/*
-        if(!cfg.backend.mongodb) return require('./lib/app.js')(cfg)
+    return { css:[ n ], js:[ '/' + name + '/app_front_' + name ], cfg: cfg }
 
-        return require('./lib/mongodb.js').connect(cfg.backend.mongodb,
-        function on_app_db(err, db){
-            err && process.exit(1)// it's over, don't even launch
+    function check_launch_daemon(cb){
+    var cwd, d
 
-            return require('./lib/app.js')(cfg, db)
+        if(!cfg.bin) return cb()// don't launch if no binary is configured
+
+        cwd = __dirname + '/../../' + (cfg.db_path || '/data/supromongod/')
+        try {
+            d = fs.statSync(cwd)
+        } catch(ex){
+            return require('mkdirp').mkdirp(cwd,
+            function mkdirp_data_dir(err){
+                if(err) throw err
+
+                return spawn_mongod(cwd, cb)
+            })
         }
-        )
+        if(!d.isDirectory()){
+            throw new Error('Is not a directory: ' + cwd)
+        }
+        return spawn_mongod(cwd, cb)
+    }
 
-        cfg.backend.ctl_on_close(function(){
-            ....
+    function spawn_mongod(cwd){
+    var cmd, lf, cp
+
+        cp = require('child_process')
+
+        lf = new Date()
+        lf = cwd + lf.getUTCFullYear() + '-' + pad(lf.getUTCMonth() + 1) + '.txt'
+
+        /* run repair stage */
+        cmd = {
+            bin: cfg.bin ? __dirname + '/' + cfg.bin : '/usr/local/bin/mongod',
+            arg:(// check and apply defaults
+                cfg.cmd_repair ||
+                '--repair --upgrade --dbpath .'
+            ).split(' '),
+            opt:{
+                cwd: cwd,
+                detached: false,
+                stdio:[
+                    'ignore'
+                    ,fs.openSync(lf,'a+')
+                    ,fs.openSync(lf,'a+')
+                ]
+            }
+        }
+        log('^ `mongod` repair start')
+        mongod = cp.spawn(cmd.bin, cmd.arg, cmd.opt)
+        if(!mongod.pid || mongod.exitCode){
+            throw new Error('ERROR spawn repairing `mongod` exit code: ' + mongod.exitCode)
+        }
+        mongod.on('close', function(code){
+            log('$ `mongod` repair stop')
+            if(code !== 0){
+                throw new Error('ERROR `mongod` repair exit code: ' + code)
+            }
         })
+        return
 
-        if(cfg.backend.mongodb){
-            if((cfg = require('./mongodb.js').client)){
-            //FIXME: check `serverStatus.metrics.cursor.open.total`
-                return cfg.close(true, function end_with_mongodb(err){
+//run exe, check in setinterval, cb, api.db = instance
+/*
+	 _mongo 'sts_running' 7>/dev/null 8>&7 && _con "OK
+
+Stop mongod Processes
+
+In a clean shutdown a mongod completes all pending operations,
+flushes all data to data files, and closes all data files.
+Other shutdowns are unclean and can compromise the validity the data files.
+
+shutdown         { shutdown: 1 }
+return a.command({ buildInfo: 1 } ,function(e ,d){
+*/
+    }
+
+    function api_db_setup(){
+        return require('./lib/mongodb.js').connect(cfg,
+        function on_app_db(err, db){
+            if(err){
+                console.error('supromongod:', err)
+                return process.exit(1)// it's over, don't even launch
+            }
+
+            cfg.backend.ctl_on_close(
+            function(req, res, next){
+                api.db && api.db.close(true,
+                function end_with_mongodb(err){
+                var body = ''
+                //FIXME: check `serverStatus.metrics.cursor.open.total`
                     err && (body += '! MongoDB close error:' + err + '\n')
                     body += '^ MongoDB connection was closed\n'
                     log(body)
+                    res.write(body)
 
-                    res.writeHead(200 ,{ 'Content-Length': body.length,
-                                         'Content-Type': 'text/plain' }
-                    )
-                    res.end(body)
-
-                    return the_end(err ? 2 : 0)
+                    return next(err)
                 })
-            }
-        }
-*/
+            })
+            return api.db = db
+        })
+    }
+
+    function pad(n){
+        return n < 10 ? '0' + n : n
+    }
+}
