@@ -84,6 +84,25 @@ var n, fs, mongod
             if(code !== 0){
                 throw new Error('ERROR `mongod` repair exit code: ' + code)
             }
+            cmd.opt.detached = true
+            cmd.arg = (cfg.cmd_launch ||
+                // optimizations   --nopreallocate --smallfiles
+                '--usePowerOf2sizes --directory perdb ' +
+                // basic
+                '--journal --rest --httpinterface --quiet ' +
+                // connection / path
+                '--bind_ip 127.0.0.1 --port 27727 --dbpath .'
+            ).split(' ')
+
+            mongod = cp.spawn(cmd.bin, cmd.arg, cmd.opt)
+            if(!mongod.pid || mongod.exitCode){
+                throw new Error('ERROR spawn `mongod` exit code: ' + mongod.exitCode)
+            }
+            mongod.on('close', function(code){
+                mongod = code
+                log('$ `mongod` stop')
+            })
+            log('^ `mongod` start')
         })
         return
 
