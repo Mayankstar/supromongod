@@ -32,7 +32,7 @@ var n, fs, mongod
 
         if(!cfg.bin) return cb()// don't launch if no binary is configured
 
-        cwd = __dirname + '/../../' + (cfg.db_path || '/data/supromongod/')
+        cwd = __dirname + '/../..' + (cfg.db_path || '/data/supromongod/')
         try {
             d = fs.statSync(cwd)
         } catch(ex){
@@ -49,7 +49,7 @@ var n, fs, mongod
         return spawn_mongod(cwd, cb)
     }
 
-    function spawn_mongod(cwd){
+    function spawn_mongod(cwd, cb){
     var cmd, lf, cp
 
         cp = require('child_process')
@@ -74,35 +74,38 @@ var n, fs, mongod
                 ]
             }
         }
-        log('^ `mongod` repair start')
         mongod = cp.spawn(cmd.bin, cmd.arg, cmd.opt)
         if(!mongod.pid || mongod.exitCode){
             throw new Error('ERROR spawn repairing `mongod` exit code: ' + mongod.exitCode)
         }
+        log('^ `mongod` repair start pid:', mongod.pid)
         mongod.on('close', function(code){
             log('$ `mongod` repair stop')
-            if(code !== 0){
+            if(code !== 0){// -529697949 0xE06D7363
                 throw new Error('ERROR `mongod` repair exit code: ' + code)
             }
             cmd.opt.detached = true
             cmd.arg = (cfg.cmd_launch ||
-                // optimizations   --nopreallocate --smallfiles
-                '--usePowerOf2sizes --directory perdb ' +
+                // optimizations
+                '--noprealloc --smallfiles --directoryperdb ' +
                 // basic
                 '--journal --rest --httpinterface --quiet ' +
                 // connection / path
-                '--bind_ip 127.0.0.1 --port 27727 --dbpath .'
+                '--bind_ip 127.0.0.1 --port 27727 --dbpath ./'
             ).split(' ')
 
             mongod = cp.spawn(cmd.bin, cmd.arg, cmd.opt)
             if(!mongod.pid || mongod.exitCode){
-                throw new Error('ERROR spawn `mongod` exit code: ' + mongod.exitCode)
+                throw new Error('spawn `mongod` exit code: ' + mongod.exitCode)
             }
             mongod.on('close', function(code){
+                if(code !== 0){// unhandled
+                    throw new Error('close `mongod` exit code: ' + code)
+                }
                 mongod = code
                 log('$ `mongod` stop')
             })
-            log('^ `mongod` start')
+            log('^ `mongod` start pid:', mongod.pid)
         })
         return
 
