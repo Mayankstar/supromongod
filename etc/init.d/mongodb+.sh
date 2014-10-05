@@ -11,8 +11,8 @@
 # v009 2013-03-11 fix: LOGPREF=db_${DBADDR#*:}.log,
 #                 $MONGO_DBNAME without leading slash
 # v010 2013-03-13 PATH: rename bin.w32 to bin.win
-
-# TODO: --usePowerOf2sizes --nopreallocate --smallfiles --directory perdb
+# v011 2014-10-05 Use this legacy script to manually stop `mongod` under SUPRO
+#                 config was included here
 
 set -e
 
@@ -33,13 +33,17 @@ trap "" 0
 exit 0
 ' 0
 
+#### config ####
+
+DATADIR='data' # one directory only
+# NOTE: default mongodb port is used. admin port = $((this+1000)) i.e 28017
+MONGODS='127.0.0.1:27727/'
+MONGOD_SRVs="$MONGODS$DATADIR/supromongod/"
+MONGO_DBNAME="supro_GLOB"
+JSAPPLOGS="$DATADIR/supromongod/"
+
 _err() {
 printf '[error] '"$@" >&2
-}
-
-[ -e "$1" ] || {
-_err "No Config file $1 is there."
-exit 1
 }
 
 _exit() {
@@ -49,13 +53,17 @@ exit "$1"
 
 case "$OSTYPE" in
 *cygwin*) # OSTYPE=cygwin in `bash`
-	LD_LIBRARY_PATH='/bin:/bin.win'
-	PATH="/bin:/bin.win:$PATH"
+	MONGOD='mongod.exe --quiet --rest --httpinterface'
+	MONGO='mongo.exe'
+	LD_LIBRARY_PATH='/bin:/app_modules/supromongod/bin/'
+	PATH="/bin:/app_modules/supromongod/bin/:$PATH"
 	_start(){
 	cmd /C start "$@"
 	}
 ;;
 *linux_gnu* | *)
+	MONGOD='mongod --quiet --rest --httpinterface'
+	MONGO='mongo'
 	OSTYPE=linux-gnu
 	LD_LIBRARY_PATH="/usr/local/bin:$LD_LIBRARY_PATH"
 	case "$PATH" in
@@ -67,13 +75,6 @@ case "$OSTYPE" in
 	}
 ;;
 esac
-# including config here; make \r\n -> \n trasformation
-sed 's/\r//g' "$1" >"$1".cr
-/bin/sh -c ". ./${1}.cr"
-. "./${1}.cr"
-rm -f "${1}.cr"
-shift 1
-#
 export PATH LD_LIBRARY_PATH
 
 _date() { # ISO date
@@ -133,26 +134,15 @@ exit 0
 }
 fi 7>&1
 
-[ -d "$JSAPPLOGS" ] || {
-	mkdir -p "$JSAPPLOGS"
-	[ 'console' = "$JSAPPSTART" ] && echo "Created logs dir: $JSAPPLOGS"
-}
-
 while [ "$*" ]
 do for db_chunk in $MONGOD_SRVs
 do
 
-# "url:port/fs/path2/db" like this "127.0.0.1:27017/_data/db"
-DBADDR=${db_chunk%%/*} # 127.0.0.1:27017
-LOGPREF=db_${DBADDR#*:}.log # db_27017.log
+# "url:port/fs/path2/db" like this "127.0.0.1:27717/_data/db"
+DBADDR=${db_chunk%%/*} # 127.0.0.1:27717
+LOGPREF="/${JSAPPLOGS}db_${DBADDR#*:}.log" # db_27717.log
 
-if [ 'console' = "$JSAPPSTART" ]
-then exec 8>>"$JSAPPLOGS/${LOGPREF}" 7>&1
-else case "$1" in
- 'stat') exec 7>/dev/null 8>&7 ;;
- *) exec 7>>"$JSAPPLOGS/${LOGPREF}" 8>&7 ;
- esac
-fi
+exec 7>&1 8>$LOGPREF
 
 if _mongo 'sts_running' 7>/dev/null 8>&7
 then # == REstart: stop, start ==
@@ -190,7 +180,7 @@ deep shit happend
 else # == start ==
 	case "$1" in
 	'start')
-	db_path=${db_chunk#*/}
+	db_path=/${db_chunk#*/}
 	{ [ -d "${db_path}" ] || {
 	   _con "creating '$db_path': "
 	   mkdir -p "$db_path" && _con "OK
@@ -203,8 +193,9 @@ else # == start ==
 # further constrain the limited db size of 32 bit builds. Thus, for now
 # journaling by default is disabled on 32 bit systems.
 $MONGOD  --repair --upgrade --dbpath "$db_path" 0</dev/null 1>&8 2>&8 7>&- 8>&-
-$MONGOD  --bind_ip "${DBADDR%%:*}" --port "${DBADDR##*:}" --journal \
-	 --dbpath "$db_path" 0</dev/null 1>&8 2>&8 7>&- 8>&- &
+$MONGOD  --bind_ip "${DBADDR%%:*}" --port "${DBADDR##*:}" \
+	 --journal --noprealloc --smallfiles \
+	 --dbpath "../../..$db_path" 0</dev/null 1>&8 2>&8 7>&- 8>&- &
 	 _con "'${db_chunk}$MONGO_DBNAME' running status: "
 	 _mongo 'sts_running' 7>/dev/null 8>&7 && _con "OK
 " ; } || {
