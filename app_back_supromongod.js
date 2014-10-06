@@ -8,7 +8,7 @@ function supromongod(api, cfg){
 var n, app = api.app, name = 'supromongod'
 
     require('./lib/mongodb.js')[cfg.bin ? 'launch' : 'connect'](
-        cfg, api
+        api, cfg
     )
 
     /* == admin/status UI && API: == */
