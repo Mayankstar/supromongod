@@ -194,7 +194,7 @@ else # == start ==
 # journaling by default is disabled on 32 bit systems.
 $MONGOD  --repair --upgrade --dbpath "$db_path" 0</dev/null 1>&8 2>&8 7>&- 8>&-
 $MONGOD  --bind_ip "${DBADDR%%:*}" --port "${DBADDR##*:}" \
-	 --journal --noprealloc --smallfiles \
+	 --journal --noprealloc --smallfiles --directoryperdb \
 	 --dbpath "../../..$db_path" 0</dev/null 1>&8 2>&8 7>&- 8>&- &
 	 _con "'${db_chunk}$MONGO_DBNAME' running status: "
 	 _mongo 'sts_running' 7>/dev/null 8>&7 && _con "OK
