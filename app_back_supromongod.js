@@ -6,7 +6,15 @@ module.exports = supromongod
 
 function supromongod(api, cfg){
 var n, app = api.app, name = 'supromongod'
+   ,path = require('path')
 
+    cfg.db_path = path.normalize(
+        //  $PWD/app_modules/supromongod/ -> $PWD/data/supromongod/
+        __dirname + '/../..' + (cfg.db_path || '/data/supromongod/')
+    )
+    if(cfg.bin){
+        cfg.bin = path.normalize(__dirname + '/' + cfg.bin)
+    }
     require('./lib/mongodb.js')[cfg.bin ? 'launch' : 'connect'](
         api, cfg
     )
