@@ -1,30 +1,63 @@
-App.cfg['App.supromongod.view.SuproMongoDB'] = {// view-only stuff uses fast init
+App.cfg['App.supromongod.view.SuproMongoDB'] = {
+    __noctl: true,// view-only stuff uses fast init
     extend: App.view.Window,
     title: l10n.mongo.title,
+    wmTooltip: l10n.mongo.modname,
     wmImg: App.backendURL + '/css/supromongod/logo-mongodb.png',
-    wmTooltip: l10n.mongo.tooltip,
     wmId: 'supromongod.view.SuproMongoDB',
     id: 'supromongod-view-SuproMongoDB',
+    requires: ['App.supromongod.view.ControlTools'],
     width: 777, height: 477,// initial
-    layout: 'border',
-    items:[
-    {
-        xtype: 'treepanel',
-        region: 'west',
-        split: true,
-        bodyPadding: 5,
-        minWidth: 185,
-        width: 185,
-        rootVisible: false,
-        store: Ext.create('App.example.store.TreeMainMenu')
-    },
-    {
-        region: 'center'
-    },
-    {
-        region: 'south',
-        split: true,
-        height: 123
+    layout: 'fit',
+    bodyStyle:
+'font-family: "Terminus" monospace; font-size: 10pt;' +
+'background-color: black; color: #00FF00;',
+    autoScroll: true,
+    initComponent: function initSuproMongoDBComponent(){
+        this.items = [
+        {
+            xtype: 'component',
+            html: l10n.mongo.noload,
+            itemId:'log'
+        }
+        ]
+        this.dockedItems = [
+        {
+            xtype: 'toolbar',
+            dock: 'top',
+            items:['-',
+            {
+                xtype: 'component',
+                html: l10n.mongo.status,
+                itemId: 'status'
+            },'->','-',
+            {
+                text: l10n.mongo.refreshLog
+               ,iconCls: 'sm-rl'
+               ,handler: function(toolbar){
+                    App.backend.req('/supromongod/lib/log',
+                    function(err, json){
+                        if(err) return
+
+                        err = toolbar.up('panel')
+                        err.down('#log').update(
+                            '<pre>' + json + '</pre>'
+                        )
+                        err.scrollBy(0, 1 << 22, false)
+                    })
+                }
+            },
+            {
+                text: l10n.stsClean
+               ,iconCls: 'sm-cl'
+               ,handler: function(toolbar){
+                    toolbar.up('panel').down('#log').update('')
+                }
+            }
+            ]
+        },
+            Ext.create('App.supromongod.view.ControlTools')
+        ]
+        this.callParent()
     }
-    ]
 }

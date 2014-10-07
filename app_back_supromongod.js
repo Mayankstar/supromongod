@@ -20,15 +20,41 @@ var n, app = api.app, name = 'supromongod'
     )
 
     /* == admin/status UI && API: == */
+    app.use('/supromongod/lib/', mwMongoAPI)
 
     // order of priority; serve static files, css, l10n
-    app.use('/' + name, api.connect['static'](__dirname + '/'))
+    app.use('/' + name + '/', api.connect['static'](__dirname + '/'))
     app.use('/l10n/', api.mwL10n(api, __dirname, '_' + name + '.js'))
-    app.use('/css/' + name, api.connect['static'](__dirname + '/css/'))
+    app.use('/css/' + name + '/', api.connect['static'](__dirname + '/css/'))
     n = '/css/' + name + '/css'
-    app.use(n, api.connect.sendFile(__dirname + name + '.css', true))
+    app.use(n, api.connect.sendFile(__dirname + '/' + name + '.css', true))
 
     // TODO API to control and getting update of logfile
 
     return { css:[ n ], js:[ '/' + name + '/app_front_' + name ], cfg: cfg }
+
+    function mwMongoAPI(req, res, next){
+    var ret = { success: true, data: '' }
+
+        //req.session.can && req.session.can[]
+
+        switch(req.url){// API is protected, thus `req.session` must be valid
+            case '/log': ret.data = 'log'
+            return api.connect.sendFile(cfg.log_filename, true)(req, res, next)
+
+            case '/sts': ret.data = 'status'
+                break
+            case '/tst': ret.data = 'test'
+                break
+            case '/stp': ret.data = 'stop'
+                break
+            case '/rst': ret.data = 'restart'
+                break
+            case '/kill': ret.data = 'kill'
+                break
+            default:break
+        }
+
+        return res.json(ret)
+    }
 }

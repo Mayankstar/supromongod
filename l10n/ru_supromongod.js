@@ -2,4 +2,7 @@ l10n.mongo = { lang: 'ru' //!!! локализация используется 
     ,modname: "СУПРО MongoDB"
     ,tooltip: "запуск СУПРО модуля MongoDB"
     ,title: 'MongoDB СУПРО модуль'
+    ,refreshLog: 'Обновить журнал'
+    ,status: '&nbsp;статус работы <b>`mongod`</b>'
+    ,noload: '== No log info loaded =ru='// terminus has no cyrillic
 }
