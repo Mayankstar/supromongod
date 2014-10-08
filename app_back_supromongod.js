@@ -5,7 +5,7 @@
 module.exports = supromongod
 
 function supromongod(api, cfg){
-var n, app = api.app, name = 'supromongod'
+var app = api.app, name = 'supromongod'
    ,path = require('path')
 
     cfg.db_path = path.normalize(
@@ -20,18 +20,30 @@ var n, app = api.app, name = 'supromongod'
     )
 
     /* == admin/status UI && API: == */
-    app.use('/supromongod/lib/', mwMongoAPI)
+    if(!cfg.rbac){
+        cfg.rbac = { can: { }}
+    }
+    // add `can` for toolbar with daemon handlers
+    cfg.rbac.can['App.supromongod.view.ControlTools'] = true
+    cfg.rbac.can['/supromongod/lib/'] = true
 
-    // order of priority; serve static files, css, l10n
-    app.use('/' + name + '/', api.connect['static'](__dirname + '/'))
-    app.use('/l10n/', api.mwL10n(api, __dirname, '_' + name + '.js'))
-    app.use('/css/' + name + '/', api.connect['static'](__dirname + '/css/'))
-    n = '/css/' + name + '/css'
-    app.use(n, api.connect.sendFile(__dirname + '/' + name + '.css', true))
+    return {
+        css:['/css/' + name + '/css'],
+        js: ['/' + name + '/app_front_' + name ],
+        app_use: app_use,// call this *after* `mwBasicAuthorization()`
+        cfg: cfg
+    }
 
-    // TODO API to control and getting update of logfile
-
-    return { css:[ n ], js:[ '/' + name + '/app_front_' + name ], cfg: cfg }
+    function app_use(){
+        app.use('/supromongod/lib/', mwMongoAPI)
+        // order of priority; serve static files, css, l10n
+        app.use('/' + name + '/', api.connect['static'](__dirname + '/'))
+        app.use('/l10n/', api.mwL10n(api, __dirname, '_' + name + '.js'))
+        app.use('/css/' + name + '/', api.connect['static'](__dirname + '/css/'))
+        app.use('/css/' + name + '/css', api.connect.sendFile(
+            __dirname + '/' + name + '.css', true)
+        )
+    }
 
     function mwMongoAPI(req, res, next){
     var ret = { success: true, data: '' }
