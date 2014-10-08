@@ -37,13 +37,21 @@ App.cfg['App.supromongod.view.SuproMongoDB'] = {
                ,handler: function(toolbar){
                     App.backend.req('/supromongod/lib/log',
                     function(err, json){
-                        if(err) return
+                        if(!err){
+                            err = toolbar.up('panel')
+                            err.down('#log').update(
+                                '<pre>' + json + '</pre>'
+                            )
+                            err.scrollBy(0, 1 << 22, false)
+                            return
+                        }
 
-                        err = toolbar.up('panel')
-                        err.down('#log').update(
-                            '<pre>' + json + '</pre>'
-                        )
-                        err.scrollBy(0, 1 << 22, false)
+                        Ext.Msg.show({
+                            title: l10n.errun_title,
+                            buttons: Ext.Msg.OK,
+                            icon: Ext.Msg.ERROR,
+                            msg: l10n.errapi + '<br><b>' + json.err + '</b>'
+                        })
                     })
                 }
             },
