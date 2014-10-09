@@ -1,0 +1,66 @@
+<h2 class="title"><a href="{{baseUrl}}/{{collectionName}}">{{collectionName}}</a>/{{_id}}</h2>
+<br><br>
+{{>partials/flashMessage}}
+
+<div class="row">
+  <div id="editor" class="editor span9">{{doc}}</div>
+</div>
+
+<div class="after-editor">
+  <input type="button" id="edit" class="btn" value="No change yet" disabled="disabled">&nbsp;&nbsp;&nbsp;
+  <input type="button" id="delete" class="btn btn-danger" value="Delete">
+  <br>
+</div>
+
+<!-- Used to do a non-AJAX redirect -->
+<form id="postToRedirect" style="display: none;" method="post" action="{{baseUrl}}/{{collectionName}}/{{_id}}">
+  <input type="hidden" value="" name="newData">
+</form>
+
+<script>
+  // Setting up ACE editor
+  var editor = ace.edit("editor")
+    , JSModeC = require("ace/mode/javascript").Mode
+    , JSMode = new JSModeC()
+    , sess = editor.getSession()
+    , docWasEdited = false
+    , $editButton = $('#edit')
+    ;
+
+  sess.setMode(JSMode);
+
+  // Don't show "fake errors" since just the object is not considered valid javascript
+  sess.setValue('doc = ' + sess.getValue() + ';');
+
+  editor.on('change', function () {
+    if (!docWasEdited) {
+      docWasEdited = true;
+      $editButton.addClass('btn-primary');
+      $editButton.attr('value', 'Save changes');
+      $editButton.removeAttr('disabled');
+    }
+  });
+
+  // What to do on a save
+  $editButton.on('click', function () {
+    var errorsOrWarnings = sess.getAnnotations(), canSave = true, i;
+
+    for (i = 0; i < errorsOrWarnings.length; i += 1) {
+      if (errorsOrWarnings[i].type !== 'info') { canSave = false; }
+    }
+
+    if (canSave) {
+      var newDoc = editor.getSession().getValue();
+      $('#postToRedirect input[name=newData]').attr('value', newDoc);
+      $('#postToRedirect').submit();
+    } else {
+      alert('You should make this valid javascript before saving!');
+    }
+  });
+
+  // What to do on a click on 'delete'
+  $('#delete').on('click', function () {
+    var doit = confirm('Are you sure you want to delete this document? There is no going back!');
+    if (doit) { window.location = '{{baseUrl}}/{{collectionName}}/{{_id}}/delete'; }
+  });
+</script>

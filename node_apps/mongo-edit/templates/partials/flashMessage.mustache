@@ -1,0 +1,21 @@
+{{#alert}}
+<div class="alert {{type}}">
+  <button type="button" class="close" data-dismiss="alert">&times;</button>
+  {{message}}
+</div>
+{{/alert}}
+
+
+<script>
+  setTimeout(function() {
+    $('.alert').fadeOut(700, function () {
+      $('.alert').alert('close');
+    });
+  }, 1800);
+
+  // If the History API is supported, remove the querystring from the URL
+  if (window.history) {
+    window.history.replaceState({}, "Mongo Edit", window.location.pathname);
+  }
+
+</script>
