@@ -64,9 +64,43 @@ var app = api.app, name = 'supromongod'
                 break
             case '/kill': ret.data = 'kill'
                 break
+            case '/user': ret.data = 'user'
+                api.rbac(ret.data = { supromongod:{ cfg:{ rbac: mongo_rbac()}}})
+                break
             default:break
         }
-
         return res.json(ret)
+    }
+
+    function mongo_rbac(){
+        return {
+            roles: {
+                'mongo.role':[// new cans are merged
+                    'module.supromongod',
+                    '/supromongod/lib/',
+                    'App.supromongod.view.ControlTools',
+
+                    'App.um.wes',
+                    'App.um.controller.Chat',
+                    'App.um.view.Chat',
+                    '/um/lib/wes',
+                    '/um/lib/chat'
+                ],
+                'developer.local':[
+                    'module.supromongod',//it has '*' but anyway
+                    '/supromongod/lib/',// it has '*' but anyway
+                    'App.supromongod.view.ControlTools',
+                ]
+            },
+            users:{
+                'mongo':{
+                    id: 'mongo',
+                    // require('crypto').createHash('sha1').update(pass).digest('hex')
+                    pass: '9d4e1e23bd5b727046a9e3b4b7db57bd8d6ee684',
+                    roles:[ 'mongo.role' ],
+                    name: 'mongo role'
+                }
+            }
+        }
     }
 }
