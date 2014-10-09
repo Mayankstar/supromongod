@@ -22,6 +22,8 @@ var app = api.app, name = 'supromongod'
     /* == admin/status UI && API: == */
     if(!cfg.rbac){
         cfg.rbac = { can: { }}
+    } else if(!cfg.rbac.can){
+        cfg.rbac.can = { }
     }
     // add `can` for toolbar with daemon handlers
     cfg.rbac.can['App.supromongod.view.ControlTools'] = true
@@ -74,7 +76,7 @@ var app = api.app, name = 'supromongod'
 
     function mongo_rbac(){
         return {
-            roles: {
+            roles:{
                 'mongo.role':[// new cans are merged
                     'module.supromongod',
                     '/supromongod/lib/',
@@ -86,7 +88,7 @@ var app = api.app, name = 'supromongod'
                     '/um/lib/wes',
                     '/um/lib/chat'
                 ],
-                'developer.local':[
+                'developer.local':[// add to existing role
                     'module.supromongod',//it has '*' but anyway
                     '/supromongod/lib/',// it has '*' but anyway
                     'App.supromongod.view.ControlTools',
@@ -97,7 +99,7 @@ var app = api.app, name = 'supromongod'
                     id: 'mongo',
                     // require('crypto').createHash('sha1').update(pass).digest('hex')
                     pass: '9d4e1e23bd5b727046a9e3b4b7db57bd8d6ee684',
-                    roles:[ 'mongo.role' ],
+                    roles:['mongo.role'],
                     name: 'mongo role'
                 }
             }
