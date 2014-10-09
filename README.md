@@ -14,7 +14,6 @@ supro mongodb launcher and db provider
             bin: 'bin/mongod.exe',// if distro is used, put e.g. '/usr/bin/' here
             stop_on_restart: !true,// if `node.js` restarts stop `mongod` or not
             db_path: '/data/supromongod/',
-            cmd_repair: '',
             cmd_launch: '',
             log_filename: '',
             url: 'mongodb://127.0.0.1:27727/'
