@@ -35,9 +35,9 @@ App.cfg['App.supromongod.view.SuproMongoDB'] = {
                 text: l10n.mongo.refreshLog
                ,iconCls: 'sm-rl'
                ,handler: function(toolbar){
-                    App.backend.req('/supromongod/lib/log',
+                    App.backend.req('/supromongod/lib/api/log',
                     function(err, json){
-                        if(!err){
+                        if(!err && 'string' == typeof json){// expecting text
                             err = toolbar.up('panel')
                             err.down('#log').update(
                                 '<pre>' + json + '</pre>'
@@ -45,7 +45,7 @@ App.cfg['App.supromongod.view.SuproMongoDB'] = {
                             err.scrollBy(0, 1 << 22, false)
                             return
                         }
-
+                        // json = { success: false, err: "foo" }
                         Ext.Msg.show({
                             title: l10n.errun_title,
                             buttons: Ext.Msg.OK,
