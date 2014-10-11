@@ -32,6 +32,18 @@ App.cfg['App.supromongod.view.SuproMongoDB'] = {
                 itemId: 'status'
             },'->','-',
             {
+                text: 'mongo-edit',
+                tooltip: 'run it manually by script <b>etc/_mongo_edit.[sh,cmd]</b>',
+                href: 'http://localhost:2764/'
+            },'-',
+            {
+                text: 'admin web console',
+                tooltip: 'enabled by <b>--rest --httpinterface</b> options',
+                href: 'http://localhost:' + (
+                    App.User.modules.extjs.mongodb_port + 1000
+                ) + '/'
+            },'-',
+            {
                 text: l10n.mongo.refreshLog
                ,iconCls: 'sm-rl'
                ,handler: function(toolbar){
