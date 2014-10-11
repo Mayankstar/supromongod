@@ -67,5 +67,9 @@ App.cfg['App.supromongod.view.SuproMongoDB'] = {
             Ext.create('App.supromongod.view.ControlTools')
         ]
         this.callParent()
+
+        this.on('destroy', function(){
+           App.backend.req('/supromongod/lib/dev')
+        })
     }
 }
