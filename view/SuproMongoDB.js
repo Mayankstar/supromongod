@@ -33,11 +33,13 @@ App.cfg['App.supromongod.view.SuproMongoDB'] = {
             },'->','-',
             {
                 text: 'mongo-edit',
+                iconCls: 'sm-me',
                 tooltip: 'run it manually by script <b>etc/_mongo_edit.[sh,cmd]</b>',
                 href: 'http://localhost:2764/'
             },'-',
             {
                 text: 'admin web console',
+                iconCls: 'sm-ac',
                 tooltip: 'enabled by <b>--rest --httpinterface</b> options',
                 href: 'http://localhost:' + (
                     App.User.modules.extjs.mongodb_port + 1000
