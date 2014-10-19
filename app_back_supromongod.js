@@ -10,7 +10,7 @@ var cfg, name = 'supromongod'
 
     cfg = (config_default()).supromongod
 
-    if('boolean' != typeof cfg){// not simple module enabler by 'true'
+    if('boolean' != typeof modcfg){// not simple module enabler by 'true'
         for(var f in modcfg){
             cfg[f] = modcfg[f]
         }
