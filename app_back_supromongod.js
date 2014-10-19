@@ -4,12 +4,16 @@
 
 module.exports = supromongod
 
-function supromongod(api, cfg){
-var app = api.app, name = 'supromongod'
+function supromongod(api, modcfg){
+var cfg, name = 'supromongod'
    ,path = require('path')
 
-    if('boolean' == typeof cfg){// simple module enabler by 'true'
-        cfg = (config_default()).supromongod// use default config
+    cfg = (config_default()).supromongod
+
+    if('boolean' != typeof cfg){// not simple module enabler by 'true'
+        for(var f in modcfg){
+            cfg[f] = modcfg[f]
+        }
     }
 
     cfg.db_path = path.normalize(
@@ -41,6 +45,8 @@ var app = api.app, name = 'supromongod'
     }
 
     function app_use(){
+    var app = api.app
+
         app.use('/' + name + '/lib/', require('./lib/api_load.js')(api, cfg))
         // order of priority; serve static files, css, l10n
         app.use('/' + name + '/', api.connect['static'](__dirname + '/'))
