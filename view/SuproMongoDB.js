@@ -17,6 +17,7 @@ App.cfg['App.supromongod.view.SuproMongoDB'] = {
         this.items = [
         {
             xtype: 'component',
+            style: 'white-space: pre-wrap',
             html: l10n.mongo.noload,
             itemId:'log'
         }
@@ -53,9 +54,7 @@ App.cfg['App.supromongod.view.SuproMongoDB'] = {
                     function(err, json){
                         if(!err && 'string' == typeof json){// expecting text
                             err = toolbar.up('panel')
-                            err.down('#log').update(
-                                '<pre>' + json + '</pre>'
-                            )
+                            err.down('#log').update(json)
                             err.scrollBy(0, 1 << 22, false)
                             return
                         }
