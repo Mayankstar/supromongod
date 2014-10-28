@@ -4,5 +4,5 @@ l10n.mongo = { lang: 'ru' //!!! локализация используется 
     ,title: 'MongoDB СУПРО модуль'
     ,refreshLog: 'Обновить журнал'
     ,status: '&nbsp;статус работы <b>`mongod`</b>'
-    ,noload: '== No log info loaded =ru='// terminus has no cyrillic
+    ,noload: '== Не загружен журнал =='
 }

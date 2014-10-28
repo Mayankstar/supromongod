@@ -10,7 +10,7 @@ App.cfg['App.supromongod.view.SuproMongoDB'] = {
     width: 777, height: 477,// initial
     layout: 'fit',
     bodyStyle:
-'font-family: "Terminus" monospace; font-size: 10pt;' +
+'font-family: "Lucida Console" monospace; font-size: 10pt;' +
 'background-color: black; color: #00FF00;',
     autoScroll: true,
     initComponent: function initSuproMongoDBComponent(){
