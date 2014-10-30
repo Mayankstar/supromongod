@@ -11,6 +11,7 @@ App.view.items_Shortcuts = Ext.Array.push(App.view.items_Shortcuts || [ ],[
    ,handler:
     function supromongod(btn){
     var tb = Ext.getCmp('wm').items.getByKey('supromongod.view.SuproMongoDB')
+
         if(tb){
             tb.toggle(true)
         } else {

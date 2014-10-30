@@ -44,7 +44,7 @@ App.cfg['App.supromongod.view.SuproMongoDB'] = {// fast init
                 iconCls: 'sm-ac',
                 tooltip: 'enabled by <b>--rest --httpinterface</b> options',
                 href: 'http://localhost:' + (
-                    App.User.modules.extjs.mongodb_port + 1000
+                    App.cfg.modules.supromongod.extjs.mongodb_port + 1000
                 ) + '/'
             },'-',
             {
