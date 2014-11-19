@@ -16,6 +16,7 @@ supro mongodb launcher and db provider
             db_path: '/data/supromongod/',
             cmd_launch: '',
             log_filename: '',
+            port: 27727,
             url: 'mongodb://127.0.0.1:27727/'
            ,extjs:{ mongodb_port: 27727 }
            ,db_name: 'supro_GLOB'
