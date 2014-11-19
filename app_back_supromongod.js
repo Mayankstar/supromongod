@@ -8,12 +8,13 @@ function supromongod(api, modcfg){
 var cfg, name = 'supromongod'
    ,path = require('path')
 
-    cfg = (config_default()).supromongod
-
     if('boolean' != typeof modcfg){// not simple module enabler by 'true'
+        cfg = (config_default(modcfg.port)).supromongod
         for(var f in modcfg){
             cfg[f] = modcfg[f]
         }
+    } else {
+        cfg = (config_default()).supromongod
     }
 
     cfg.db_path = path.normalize(
@@ -57,7 +58,7 @@ var cfg, name = 'supromongod'
         )
     }
 
-    function config_default(){
+    function config_default(port){
         return {// config part as it can be in main config file
         supromongod:{//'mongodb://' + process.env.MONGODS + process.env.MONGO_DBNAME
             // comment out `bin` if `mongodb[.exe]` is launched elsewhere
@@ -66,8 +67,8 @@ var cfg, name = 'supromongod'
             db_path: '/data/supromongod/',
             cmd_launch: '',
             log_filename: '',
-            url: 'mongodb://127.0.0.1:27727/'
-           ,extjs:{ mongodb_port: 27727 }// App.cfg.modules.supromongod.extjs.mongodb_port
+            url: 'mongodb://127.0.0.1:' + (port || '27727') + '/'
+           ,extjs:{ mongodb_port: (+port || 27727) }// App.cfg.modules.supromongod.extjs.mongodb_port
            ,db_name: 'supro_GLOB'
            ,options:{// you know what you are doing here!
                 db:{
