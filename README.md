@@ -4,6 +4,9 @@ supromongod
 supro mongodb launcher and db provider
 ![image](https://cloud.githubusercontent.com/assets/243627/4550850/ad526f2e-4e6a-11e4-8584-08ff2308af32.png)
 
+## `mongo-edit` inside
+![image](https://cloud.githubusercontent.com/assets/243627/5295824/003ea278-7bae-11e4-83d1-9de38329f2d2.png)
+
 #### Config example:
 
 ```js
