@@ -2,9 +2,7 @@
  * Run `mongod` and connect to it
  **/
 
-module.exports = supromongod
-
-function supromongod(api, modcfg){
+module.exports = function configure(api, modcfg){
 var cfg, name = 'supromongod'
    ,path = require('path')
 
@@ -96,7 +94,7 @@ var cfg, name = 'supromongod'
                     'developer.local':[// add to existing role
                         'module.supromongod',//it has '*' but anyway
                         '/supromongod/lib/',// it has '*' but anyway
-                        'App.supromongod.view.ControlTools',
+                        'App.supromongod.view.ControlTools'
                     ]
                 },
                 users:{
