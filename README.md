@@ -7,6 +7,11 @@ supro mongodb launcher and db provider
 ## `mongo-edit` inside
 ![image](https://cloud.githubusercontent.com/assets/243627/5295824/003ea278-7bae-11e4-83d1-9de38329f2d2.png)
 
+#### MongoDB binaries:
+
+Before start, download and put binaries/exe files in `./bin` directory.
+Change `bin` config (see below) accordingly.
+
 #### Config example:
 
 ```js
