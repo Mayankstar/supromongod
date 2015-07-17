@@ -21,6 +21,7 @@ do
 [ -e "${BINPATH}bin/node" ] && NODE='bin/node' && break
 BINPATH=''
 NODE='node'
+break
 done
 
 "$BINPATH$NODE" server.js config/suproLocal.js
