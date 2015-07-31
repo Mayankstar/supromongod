@@ -47,6 +47,8 @@ var cfg, name = 'supromongod'
     var app = api.app
 
         app.use('/' + name + '/lib/', require('./lib/api_load.js')(api, cfg))
+        // hide this backend file from the web
+        app.use('/' + name + '/app_back_' + name + '.js', api.connect._404)
         // order of priority; serve static files, css, l10n
         app.use('/' + name + '/', api.connect['static'](__dirname + '/'))
         app.use('/l10n/', api.mwL10n(api, __dirname, '_' + name + '.js'))
