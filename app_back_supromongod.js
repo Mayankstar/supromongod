@@ -62,7 +62,7 @@ var cfg, name = 'supromongod'
         return {// config part as it can be in main config file
         supromongod:{//'mongodb://' + process.env.MONGODS + process.env.MONGO_DBNAME
             // comment out `bin` if `mongodb[.exe]` is launched elsewhere
-            bin: 'bin/mongod.exe',// if distro is used, put e.g. '/usr/bin/' here
+            bin: 'bin/mongod',// if distro is used, put e.g. '/usr/bin/' here
             stop_on_restart: !true,// if `node.js` restarts stop `mongod` or not
             db_path: '/data/supromongod/',
             cmd_launch: '',
