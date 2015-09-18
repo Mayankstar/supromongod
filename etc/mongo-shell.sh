@@ -19,8 +19,7 @@ then
     #var DB  = 'hpoisk_nodes_' + OBJ // mongo-shell db: hpoisk_nodes_GLOB
     #```                                                ^^^^^^^^^^^^^^^^^
     DB=${NODEJS_CONFIG##*var DB}
-    n=`printf '\n_'`
-    n=${n%_} # needed '\n' character
+    n=`printf '\n\r'`
     DB=${DB%%[$n]*}
 else
     DB=$1
