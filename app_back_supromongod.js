@@ -20,7 +20,11 @@ var cfg, name = 'supromongod'
         __dirname + '/../..' + (cfg.db_path || '/data/supromongod/')
     )
     if(cfg.bin){
-        cfg.bin = path.normalize(__dirname + '/' + cfg.bin)
+        // don't launch daemon if env.NODEJS_RELOAD is set; app doesn't stop it too
+        // `mongod` may not relaunch on short resources while everything is/was OK
+        cfg.bin = process.env.NODEJS_RELOAD ? '' : path.normalize(
+            __dirname + '/' + cfg.bin
+        )
     }
     require('./lib/mongodb.js')[cfg.bin ? 'launch' : 'connect'](
         api, cfg
