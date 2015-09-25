@@ -5,7 +5,7 @@
   // Regex don't work well and I don't want to include a js-parser just for that
   db: { host: '127.0.0.1'
       , port: 27727
-      , name: 'supro_GLOB'
+      , name: process.env.NODEJS_MONGO_DB || 'supro_GLOB'
       }
 , svPort: 2764
 , trustProxy: false
