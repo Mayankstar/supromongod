@@ -11,12 +11,13 @@ body {
 
 .editor {
   position: relative;
-  height: 400px;
+  margin-top: 3em;
+  height: 82%;/* 400px;*/
 }
-
-.after-editor {
-  margin-top: 410px;
-}
+/*
+*.after-editor {
+*  margin-top: 410px;
+}*/
 
 .top-left-title {
   margin-bottom: 30px;
