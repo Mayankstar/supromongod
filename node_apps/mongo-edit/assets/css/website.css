@@ -19,6 +19,10 @@ body {
 *  margin-top: 410px;
 }*/
 
+.alert {
+  float: right;
+}
+
 .top-left-title {
   margin-bottom: 30px;
 }

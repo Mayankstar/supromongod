@@ -1,6 +1,5 @@
 <h2 class="title"><a href="{{baseUrl}}/{{collectionName}}">{{collectionName}}</a>/{{_id}}</h2>
 <br><br>
-{{>partials/flashMessage}}
 
 <div class="row">
   <div id="editor" class="editor span9">{{doc}}</div>
@@ -9,7 +8,7 @@
 <div class="after-editor">
   <input type="button" id="edit" class="btn" value="No change yet" disabled="disabled">&nbsp;&nbsp;&nbsp;
   <input type="button" id="delete" class="btn btn-danger" value="Delete">
-  <br>
+  {{>partials/flashMessage}}
 </div>
 
 <!-- Used to do a non-AJAX redirect -->
