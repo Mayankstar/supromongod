@@ -1,5 +1,7 @@
 {
   "name": "supromongod",
+  "description": "v001@2015-10-10: MongoDB for SUPRO",
+  "version": "1.0",
   "license": "MIT",
   "license_ExtJS": "GPLv3",
   "repository": {
