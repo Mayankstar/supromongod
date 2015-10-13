@@ -1,0 +1,26 @@
+{
+  "name": "supromongod",
+  "license": "MIT",
+  "license_ExtJS": "GPLv3",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/suprojs/supromongod"
+  },
+  "maintainers": [
+    {
+      "name": "Oleg Verych",
+      "email": "olecom@gmail.com"
+    }
+  ],
+  "engines": {
+     "mongod": "3.0.6"
+  }
+  "keywords": [
+    "extjs",
+    "node.js",
+    "mongodb"
+  ],
+  "dependencies": {
+    "mongodb": "^1.4.39"
+  }
+}
