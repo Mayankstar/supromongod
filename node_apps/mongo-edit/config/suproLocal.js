@@ -4,7 +4,7 @@
   // Note that the first line is a '{' because Mongo Edit will crash if the config file begins with a comment
   // Regex don't work well and I don't want to include a js-parser just for that
   db: { host: '127.0.0.1'
-      , port: 27727
+      , port: process.env.NODEJS_MONGO_PORT || 27727
       , name: process.env.NODEJS_MONGO_DB || 'supro_GLOB'
       }
 , svPort: 2764
