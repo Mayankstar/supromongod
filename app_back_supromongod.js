@@ -71,6 +71,7 @@ var cfg, name = 'supromongod'
             db_path: '/data/supromongod/',
             cmd_launch: '',
             log_filename: '',
+            port: port || 27727,
             url: 'mongodb://127.0.0.1:' + (port || '27727') + '/'
            ,extjs:{ mongodb_port: (+port || 27727) }// App.cfg.modules.supromongod.extjs.mongodb_port
            ,db_name: 'supro_GLOB'
