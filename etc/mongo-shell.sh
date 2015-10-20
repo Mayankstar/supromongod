@@ -1,5 +1,6 @@
 #!/bin/sh
-
+# NOTE: "host" is hardcoded to '127.0.0.1',
+#       "port" is 27727 or $NODEJS_CONFIG.supromongod.port
 # DB name is taken from $NODEJS_CONFIG or $1
 set -e
 
@@ -14,18 +15,36 @@ exit 0
 
 if [ "$NODEJS_CONFIG" ]
 then
-    # get database name from the javascript config file comment:
-    #```js
-    #var DB  = 'hpoisk_nodes_' + OBJ // mongo-shell db: hpoisk_nodes_GLOB
-    #```                                                ^^^^^^^^^^^^^^^^^
-    DB=${NODEJS_CONFIG##*var DB}
-    n=`printf '\n\r'`
-    DB=${DB%%[$n]*}
+    : <<'__' # parse JS content to see database name, i.e.:
+var DB = 'MAIN'// name is used in mongo-shell, mongo-export tools
+          ^^^^
+__
+    DB=${NODEJS_CONFIG##*var DB = [\'\"]}
+    DB=${DB%%[\'\"]*}
+    : <<'__' # parse JS content to see database port, i.e.:
+        supromongod:{
+            db_path: '/data/supromongod/' + DB + '_wiredTiger/',
+            port: 27081,
+                  ^^^^^
+            db_name: DB
+        },
+__
+    PORT=`sed "/supromongod:{/,/}/{/ port *:/s_.*: *\([[:digit:]]*\).*_\1_p};d" <<EOF
+$NODEJS_CONFIG
+EOF
+`
 else
     DB=$1
 fi
 
-"${0%/*}/../bin/mongo" "127.0.0.1:27727/${DB##* }"
+[ "$PORT" ] || PORT=27727
+
+[ "$DB" ] || echo '
+WARNING: $DB is empty
+please specify $NODEJS_CONFIG or $2 as DB name
+'
+
+"${0%/*}/../bin/mongo" "127.0.0.1:$PORT/$DB"
 
 trap '' 0
 exit 0
