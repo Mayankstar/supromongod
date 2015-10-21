@@ -59,15 +59,24 @@ please specify $NODEJS_CONFIG or $2 as DB name
 [ "$FILE" ] && SRC=$FILE || SRC=STDIN
 
 echo "
-from '$SRC' importing into '$DB' '$1'
-...
-"
+from '$SRC' importing into '$DB' '$1'"'
+NOTE: if import fails, run `db.repairDatabase()` in mongo shell and export new
+...'
 
-"${0%/*}/../bin/mongoimport"             \
-              '--host' "127.0.0.1:$PORT" \
-              '--db' "$DB"               \
-              '--collection' "$1"        \
-              $FILE
+case "$OSTYPE" in
+*cygwin* | *msys*) # MS Windows
+    BIN="${0%/*}/../bin/mongoimport.exe"
+;;
+*linux-gnu* | *linux_gnu* | *)
+    BIN="${0%/*}/../bin/mongoimport"
+;;
+esac
 
+"$BIN"                         \
+    '--host' "127.0.0.1:$PORT" \
+    '--db' "$DB"               \
+    '--collection' "$1"        \
+    '--drop'                   \
+    $FILE
 trap '' 0
 exit 0

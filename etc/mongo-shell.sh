@@ -44,7 +44,16 @@ WARNING: $DB is empty
 please specify $NODEJS_CONFIG or $2 as DB name
 '
 
-"${0%/*}/../bin/mongo" "127.0.0.1:$PORT/$DB"
+case "$OSTYPE" in
+*cygwin* | *msys*) # MS Windows
+    BIN="${0%/*}/../bin/mongo.exe"
+;;
+*linux-gnu* | *linux_gnu* | *)
+    BIN="${0%/*}/../bin/mongo"
+;;
+esac
+
+"$BIN" "127.0.0.1:$PORT/$DB"
 
 trap '' 0
 exit 0

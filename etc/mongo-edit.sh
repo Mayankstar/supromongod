@@ -47,15 +47,22 @@ PORT: $NODEJS_MONGO_PORT
     export NODEJS_MONGO_DB NODEJS_MONGO_PORT
 fi
 
-BINPATH="${0%/*}/../../../"
-while :
-do
-[ -e "${BINPATH}node.exe" ] && NODE='node.exe'&& break
-[ -e "${BINPATH}bin/node.exe" ] && NODE='bin/node.exe' && break
-[ -e "${BINPATH}bin/node" ] && NODE='bin/node' && break
-BINPATH=''
-NODE='node'
-break
-done
+BINPATH="$PWD/../../../../"
+
+case "$OSTYPE" in
+*cygwin* | *msys*) # MS Windows
+    [ -f "${BINPATH}node.exe" ] && NODE='node.exe'
+    [ -f "${BINPATH}bin/node.exe" ] && NODE='bin/node.exe'
+;;
+*linux-gnu* | *linux_gnu* | *)
+    [ -x "${BINPATH}bin/node" ] && NODE='bin/node'
+;;
+esac
+
+[ "$NODE" ] || {
+    # run from whatever PATH if empty check above
+    BINPATH=''
+    NODE='node'
+}
 
 "$BINPATH$NODE" server.js config/suproLocal.js

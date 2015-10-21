@@ -55,28 +55,37 @@ fi
 WARNING: $DB is empty
 please specify $NODEJS_CONFIG or $2 as DB name
 '
+case "$OSTYPE" in
+*cygwin* | *msys*) # MS Windows
+    BIN="${0%/*}/../bin/mongoexport.exe"
+;;
+*linux-gnu* | *linux_gnu* | *)
+    BIN="${0%/*}/../bin/mongoexport"
+;;
+esac
 
 if type gzip >/dev/null && [ ! "$3" ]
 then
 echo "
-from '$DB' exporting '$1' && gzip => './mongo_$1.json.gz'
-...
-"
-"${0%/*}/../bin/mongoexport"             \
-              '--host' "127.0.0.1:$PORT" \
-              '--db' "$DB"               \
-              '--collection' "$1"        \
+from '$DB' exporting '$1' && gzip => './mongo_$1.json.gz'"'
+NOTE: if import fails, run `db.repairDatabase()` in mongo shell and export new
+...'
+
+"$BIN"                         \
+    '--host' "127.0.0.1:$PORT" \
+    '--db' "$DB"               \
+    '--collection' "$1"        \
     | gzip -9 >"mongo_$1.json.gz"
 else
 echo "
 from '$DB' exporting '$1' => './mongo_$1.json'
 ...
 "
-"${0%/*}/../bin/mongoexport"             \
-              '--host' "127.0.0.1:$PORT" \
-              '--db' "$DB"               \
-              '--collection' "$1"        \
-              '--out' "mongo_$1.json"
+"$BIN"                         \
+    '--host' "127.0.0.1:$PORT" \
+    '--db' "$DB"               \
+    '--collection' "$1"        \
+    '--out' "mongo_$1.json"
 fi
 
 trap '' 0
