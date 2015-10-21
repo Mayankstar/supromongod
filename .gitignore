@@ -1,3 +1,2 @@
-bin/*.exe
-bin/*.dll
+bin/*
 nbproject
