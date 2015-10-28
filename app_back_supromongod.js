@@ -68,13 +68,13 @@ var cfg, name = 'supromongod'
             // comment out `bin` if `mongodb[.exe]` is launched elsewhere
             bin: 'bin/mongod',// if distro is used, put e.g. '/usr/bin/' here
             stop_on_restart: !true,// if `node.js` restarts stop `mongod` or not
-            db_path: '/data/supromongod/',
+            dbpath: '.data/supromongod/',
             cmd_launch: '',
             log_filename: '',
             port: port || 27727,
             url: 'mongodb://127.0.0.1:' + (port || '27727') + '/'
            ,extjs:{ mongodb_port: (+port || 27727) }// App.cfg.modules.supromongod.extjs.mongodb_port
-           ,db_name: 'supro_GLOB'
+           ,db: 'supro_GLOB'
            ,options:{// you know what you are doing here!
                 db:{
                     forceServerObjectId: true

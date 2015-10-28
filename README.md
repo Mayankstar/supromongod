@@ -27,7 +27,7 @@ Change `bin` config (see below) accordingly.
             port: 27727,
             url: 'mongodb://127.0.0.1:27727/'
            ,extjs:{ mongodb_port: 27727 }
-           ,db_name: 'supro_GLOB'
+           ,db: 'supro_GLOB'
            ,options:{// you know what you are doing here!
                 db:{
                     forceServerObjectId: true
