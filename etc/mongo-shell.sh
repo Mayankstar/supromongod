@@ -1,5 +1,5 @@
 #!/bin/sh
-# NOTE: "host" is hardcoded to '127.0.0.1',
+# NOTE: "host" is OPENSHIFT_NODEJS_IP || '127.0.0.1',
 #       "port" is 27727 or $NODEJS_CONFIG.supromongod.port
 # DB name is taken from $NODEJS_CONFIG or $1
 set -e
@@ -38,6 +38,7 @@ else
 fi
 
 [ "$PORT" ] || PORT=27727
+[ "$OPENSHIFT_NODEJS_IP" ] && HOST=$OPENSHIFT_NODEJS_IP || HOST='127.0.0.1'
 
 [ "$DB" ] || echo '
 WARNING: $DB is empty
@@ -53,7 +54,7 @@ case "$OSTYPE" in
 ;;
 esac
 
-"$BIN" "127.0.0.1:$PORT/$DB"
+"$BIN" "$HOST:$PORT/$DB"
 
 trap '' 0
 exit 0

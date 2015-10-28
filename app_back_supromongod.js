@@ -7,7 +7,7 @@ var cfg, name = 'supromongod'
    ,path = require('path')
 
     if('boolean' != typeof modcfg){// not simple module enabler by 'true'
-        cfg = (config_default(modcfg.port)).supromongod
+        cfg = (config_default(modcfg.port, modcfg.host)).supromongod
         for(var f in modcfg){
             cfg[f] = modcfg[f]
         }
@@ -62,7 +62,7 @@ var cfg, name = 'supromongod'
         )
     }
 
-    function config_default(port){
+    function config_default(port, host){
         return {// config part as it can be in main config file
         supromongod:{//'mongodb://' + process.env.MONGODS + process.env.MONGO_DBNAME
             // comment out `bin` if `mongodb[.exe]` is launched elsewhere
@@ -72,7 +72,7 @@ var cfg, name = 'supromongod'
             cmd_launch: '',
             log_filename: '',
             port: port || 27727,
-            url: 'mongodb://127.0.0.1:' + (port || '27727') + '/'
+            url: 'mongodb://'+ (host ||'127.0.0.1') +':'+ (port || '27727') +'/'
            ,extjs:{ mongodb_port: (+port || 27727) }// App.cfg.modules.supromongod.extjs.mongodb_port
            ,db: 'supro_GLOB'
            ,options:{// you know what you are doing here!

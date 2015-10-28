@@ -1,6 +1,6 @@
 #!/bin/sh
 # Export a collection using `mongoexport` and current config $DB
-# NOTE: "host" is hardcoded to '127.0.0.1',
+# NOTE: "host" is OPENSHIFT_NODEJS_IP || '127.0.0.1',
 #       "port" is 27727 or $NODEJS_CONFIG.supromongod.port
 # $1 -- collection name
 # DB name is taken from $NODEJS_CONFIG or $2
@@ -51,6 +51,7 @@ else
 fi
 
 [ "$PORT" ] || PORT=27727
+[ "$OPENSHIFT_NODEJS_IP" ] && HOST=$OPENSHIFT_NODEJS_IP || HOST='127.0.0.1'
 
 [ "$DB" ] || echo '
 WARNING: $DB is empty
@@ -73,7 +74,7 @@ case "$OSTYPE" in
 esac
 
 "$BIN"                         \
-    '--host' "127.0.0.1:$PORT" \
+    '--host' "$HOST:$PORT" \
     '--db' "$DB"               \
     '--collection' "$1"        \
     '--drop'                   \
