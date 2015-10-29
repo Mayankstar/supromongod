@@ -27,7 +27,7 @@ module.exports.ensureConnectionToMongo = function (req, res, next) {
  * Calculate the values used in all pages, e.g. all collections names
  */
 module.exports.commonRenderValues = function (req, res, next) {
-  req.renderValues = { baseUrl: config.baseUrl };
+  req.renderValues = { baseUrl: config.baseUrl, title: config.db.name };
 
   if (req.query.message) {
     req.renderValues.alert = {};
