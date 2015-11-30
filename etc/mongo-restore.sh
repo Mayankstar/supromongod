@@ -62,7 +62,12 @@ case "$OSTYPE" in
     BIN="${0%/*}/../bin/mongorestore.exe"
 ;;
 *linux-gnu* | *linux_gnu* | *)
-    BIN="${0%/*}/../bin/mongorestore"
+    BIN='mongorestore'
+    # we can be on data fs without exec permisson, thus try $PATH first
+    type "$BIN" >/dev/null || {
+        BIN="${0%/*}/../bin/$BIN"
+        [ -x "$BIN" ] # or fail permanently
+    }
 ;;
 esac
 

@@ -50,7 +50,12 @@ case "$OSTYPE" in
     BIN="${0%/*}/../bin/mongo.exe"
 ;;
 *linux-gnu* | *linux_gnu* | *)
-    BIN="${0%/*}/../bin/mongo"
+    BIN="mongo"
+    # we can be on data fs without exec permisson, thus try $PATH first
+    type "$BIN" >/dev/null || {
+        BIN="${0%/*}/../bin/$BIN"
+        [ -x "$BIN" ] # or fail permanently
+    }
 ;;
 esac
 

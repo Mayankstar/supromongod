@@ -23,7 +23,8 @@ var cfg, name = 'supromongod'
         // don't launch daemon if env.NODEJS_RELOAD is set; app doesn't stop it too
         // `mongod` may not relaunch on short resources while everything is/was OK
         cfg.bin = process.env.NODEJS_RELOAD ? '' : path.normalize(
-            __dirname + '/' + cfg.bin
+            // don't touch absolute paths like '/usr/local/bin' in prod. env.
+            ('/' != cfg.bin[0] ? __dirname + '/' : '') + cfg.bin
         )
     }
     require('./lib/mongodb.js')[cfg.bin ? 'launch' : 'connect'](
@@ -66,7 +67,7 @@ var cfg, name = 'supromongod'
         return {// config part as it can be in main config file
         supromongod:{//'mongodb://' + process.env.MONGODS + process.env.MONGO_DBNAME
             // comment out `bin` if `mongodb[.exe]` is launched elsewhere
-            bin: 'bin/mongod',// if distro is used, put e.g. '/usr/bin/' here
+            bin: 'bin/mongod',// dev env. if distro is used, put e.g. '/usr/bin/' in config
             stop_on_restart: !true,// if `node.js` restarts stop `mongod` or not
             dbpath: '.data/supromongod/',
             cmd_launch: '',
