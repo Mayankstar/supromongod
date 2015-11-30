@@ -66,6 +66,8 @@ case "$OSTYPE" in
         BIN="${0%/*}/../bin/$BIN"
         [ -x "$BIN" ] # or fail permanently
     }
+    # do not hog if in OPENSHIFT
+    [ "$OPENSHIFT_NODEJS_IP" ] && BIN="nice -n 19 $BIN"
 ;;
 esac
 
@@ -76,7 +78,7 @@ from '$DB' exporting '$1' && gzip => './mongo_$1.json.gz'"'
 NOTE: if import fails, run `db.repairDatabase()` in mongo shell and export new
 ...'
 
-"$BIN"                         \
+$BIN                           \
     '--host' "127.0.0.1:$PORT" \
     '--db' "$DB"               \
     '--collection' "$1"        \
@@ -86,7 +88,7 @@ echo "
 from '$DB' exporting '$1' => './mongo_$1.json'
 ...
 "
-"$BIN"                         \
+$BIN                           \
     '--host' "127.0.0.1:$PORT" \
     '--db' "$DB"               \
     '--collection' "$1"        \

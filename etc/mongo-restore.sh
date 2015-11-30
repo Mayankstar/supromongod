@@ -68,6 +68,8 @@ case "$OSTYPE" in
         BIN="${0%/*}/../bin/$BIN"
         [ -x "$BIN" ] # or fail permanently
     }
+    # do not hog if in OPENSHIFT
+    [ "$OPENSHIFT_NODEJS_IP" ] && BIN="nice -n 19 $BIN"
 ;;
 esac
 
@@ -76,11 +78,11 @@ restoring from 'mongo_$1.bson.gz' into '$DB' => '$1'"'
 NOTE: if restore fails, run `db.repairDatabase()` in mongo shell and dump new
 ...'
 
-gunzip -c "mongo_$1.bson.gz" | "$BIN" \
-    '--host' "$HOST:$PORT"            \
-    '--db' "$DB"                      \
-    '--collection' "$1"               \
-    '--drop'                          \
+gunzip -c "mongo_$1.bson.gz" | $BIN \
+    '--host' "$HOST:$PORT"          \
+    '--db' "$DB"                    \
+    '--collection' "$1"             \
+    '--drop'                        \
     '--dir' '-'
 trap '' 0
 exit 0

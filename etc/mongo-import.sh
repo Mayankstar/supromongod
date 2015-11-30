@@ -75,14 +75,16 @@ case "$OSTYPE" in
         BIN="${0%/*}/../bin/$BIN"
         [ -x "$BIN" ] # or fail permanently
     }
+    # do not hog if in OPENSHIFT
+    [ "$OPENSHIFT_NODEJS_IP" ] && BIN="nice -n 19 $BIN"
 ;;
 esac
 
-"$BIN"                         \
+$BIN                       \
     '--host' "$HOST:$PORT" \
-    '--db' "$DB"               \
-    '--collection' "$1"        \
-    '--drop'                   \
+    '--db' "$DB"           \
+    '--collection' "$1"    \
+    '--drop'               \
     $FILE
 trap '' 0
 exit 0
